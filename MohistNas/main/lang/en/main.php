@@ -94,8 +94,8 @@ return [
     'txt-v-uptime-m' => 'minute',
     'txt-v-uptime-ms' => 'minutes',
     'txt-v-uptime-mss' => ' . ',
-    'txt-v-memfree' => 'MemFree : ',
-    'txt-v-memused' => 'MemUsed : ',
+    'txt-v-memfree' => 'MemFree',
+    'txt-v-memused' => 'MemUsed',
     /* Other Information */
     'txt-Close' => 'Close',
     'txt-Cancel' => 'Cancel',

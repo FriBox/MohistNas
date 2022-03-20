@@ -8,4 +8,4 @@ Open Source Nas System （开源存储系统）
 005.  20220228  完成控制面板中获取硬件信息的部分。
 006.  20220301  完成控制面板中CPU使用率和内存使用率图表部分。
 007.  20220301  创建 github 和 gitee 开源代码库，确定使用 GPL 协议；主仓库：https://github.com/FriBox/MohistNas ， 镜像仓库：https://gitee.com/FriBox/MohistNas 。
-
+008.  20220320  控制面板中添加每秒更新的实时内存总数和占用数。

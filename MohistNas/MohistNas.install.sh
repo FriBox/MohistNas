@@ -28,7 +28,7 @@
         export http_proxy='192.168.100.253:6004';
         #安装Webmin
         wget http://prdownloads.sourceforge.net/webadmin/webmin_1.984_all.deb
-        dpkg --install webmin_1.984_all.deb
+        dpkg --install ./webmin_1.984_all.deb
 
     #安装Composer
     cd /root
@@ -47,6 +47,7 @@
     ln -s /etc/apache2/sites-available/VirtualHost.6888.conf /etc/apache2/sites-enabled/VirtualHost.6888.conf
     mv -f /etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf.bak
     rm -rf /MohistNas/phplibs/test/*.*
+    rm -rf /MohistNas/main/README.md
     #安装证书
     mkdir /MohistNas/cert
     cp -rf /MohistNas/MohistNas_Key.key /MohistNas/cert/MohistNas_Key.key
@@ -66,12 +67,38 @@
         echo "www-data ALL=(ALL) NOPASSWD:ALL"  >>  '/etc/sudoers' ; 
     fi
     systemctl restart apache2
+    #配置开启装载内存盘
+    if (( cat '/usr/lib/systemd/system/rc-local.service' | grep "[Install]" > /dev/null ))
+    then
+        #可能已经有了开机启动的[Install]内容
+    else
+        echo 'Add >> rc.local ';
+        echo ""  >>  '/usr/lib/systemd/system/rc-local.service' ; 
+        echo "[Install]"  >>  '/usr/lib/systemd/system/rc-local.service' ; 
+        echo "WantedBy=multi-user.target"  >>  '/usr/lib/systemd/system/rc-local.service' ; 
+        echo "Alias=rc-local.service"  >>  '/usr/lib/systemd/system/rc-local.service' ; 
+        echo ""  >>  '/usr/lib/systemd/system/rc-local.service' ; 
+    fi
+    cp -rf /MohistNas/MohistNas.rc.local /etc/rc.local
+    chmod 755 /etc/rc.local
+    #设置全局环境变量
+    if (( cat '/etc/profile' | grep "MohistNasCache" > /dev/null ))
+    then
+        echo 'Edit >> /etc/profile ';
+        sed -i "/^export MohistNasCache*/d" /etc/profile
+        echo 'export MohistNasCache="/MohistNas/cache/"'  >>  '/etc/profile' ; 
+    else
+        echo 'Add >> /etc/profile ';
+        echo ""  >>  '/etc/profile' ; 
+        echo 'export MohistNasCache="/MohistNas/cache/"'  >>  '/etc/profile' ; 
+        echo ""  >>  '/etc/profile' ; 
+    fi
     # 安装 laravel
-    composer global require "laravel/installer"
+    echo yes | composer global require "laravel/installer"
     cd /MohistNas/
     /root/.config/composer/vendor/bin/laravel new main
     cd main/
-    composer update
+    echo yes | composer update
     sudo chmod -R 777 /MohistNas/main/storage
     sudo chmod -R 777 /MohistNas/main/bootstrap/cache
     cp -rf /MohistNas/MohistNas.Web.env /MohistNas/main/.env

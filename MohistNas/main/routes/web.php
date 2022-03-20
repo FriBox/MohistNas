@@ -98,6 +98,9 @@ function Get_info_Status() {
         if ($x==0) { $xCpuName='all';} else { $xCpuName=$x-1;}
         if ( round(100-$xTempAll[$x]['idle'],1)<0 ) { $HWS['cpu-'.$xCpuName]=0; } else { $HWS['cpu-'.$xCpuName]=round(100-$xTempAll[$x]['idle'],1); }
     } 
+    // 获取CPU信息
+    $HWS['Cpu']=Get_info_CPU();
+
     // 获取内存使用率
     $HWS['memtotal']=trim(`cat /proc/meminfo | grep 'MemTotal' | uniq`); // 获取内存总数kB
         $HWS['memtotal']=trim(str_replace(array("MemTotal",":",'kB'), "", $HWS['memtotal'] ));
@@ -110,6 +113,9 @@ function Get_info_Status() {
     $xMu=$xMt-$xMf;
     $HWS['mem-used']=$xMu/$xMt*100;
         $HWS['mem-used']=sprintf("%.2f",substr(sprintf("%.4f",$HWS['mem-used']), 0, -2));
+    // 获取内存信息
+    $HWS['Mem']=Get_info_Mem();
+
     return $HWS; // 返回系统信息
 }
 
@@ -181,6 +187,7 @@ function Get_info_Mem() {
 function Get_info_Net() {
     // 获取网络相关信息
     $HWS['NICs']=trim(`lspci | grep Ethernet | wc -l`); // 获取系统网卡数量
+    // (ifstat -aTwS >$MohistNasCache/Network.Status &); sleep 1s; killall -9 ifstat;
     return $HWS; // 返回网络相关信息
 }
 

@@ -26,11 +26,27 @@
                 <div class="container-sm" style="padding-left:0px;padding-right:0px;">
 
                     <div class="row">
-                        <div class="col-sm"><!-- CPU使用率 -->
-                            <div class="container-sm"  style="padding-left:0px;padding-right:0px;"> <div class="row"><div id="EC_CPU" style="height:180px;width:200px;margin: 0 auto;"></div></div> </div>
+                        <div class="col-sm" style="padding-right:0px;"><!-- CPU使用率 -->
+                            <div class="container-sm"  style="padding-left:0px;padding-right:0px;"> <div class="row"><div id="EC_CPU" style="height:170px;width:190px;margin: 0 auto;"></div></div> </div>
                         </div>
-                        <div class="col-sm"><!-- 内存使用率 -->
-                            <div class="container-sm" style="padding-left:0px;padding-right:0px;"> <div class="row"><div id="EC_MEM" style="height:180px;width:200px;margin: 0 auto;"></div></div> </div>
+                        <div class="col-sm" style="padding-left:0px;padding-right:0px;"><!-- 内存使用率 -->
+                            <div class="container-sm" style="padding-left:0px;padding-right:0px;"> <div class="row"><div id="EC_MEM" style="height:170px;width:190px;margin: 0 auto;"></div></div> </div>
+                        </div>
+                        <div class="col-sm" style="padding-left:0px;padding-right:0px;">
+                            <div class="container-sm" style="height:160px;display:flex;flex-direction:column;justify-content:center;text-align:center;"><div class="row justify-content-center" style="min-height:85px;font-Size:12px;" >
+                                    <div class="row" style="padding-left:0px;padding-right:0px;">
+                                        <div class="col-auto" style="min-width:65px;padding:0px;text-align:left;">{{ __('main.txt-v-memory-text') }}&nbsp;:&nbsp;</div>
+                                        <div class="col-auto" style="min-width:75px;padding:0px;text-align:left;padding-bottom:4px;"><div  id=Mt >&nbsp;</div></div>
+                                    </div>
+                                    <div class="row" style="padding-left:0px;padding-right:0px;">
+                                        <div class="col-auto" style="min-width:65px;padding:0px;text-align:left;">{{ __('main.txt-v-memfree') }}&nbsp;:&nbsp;</div>
+                                        <div class="col-auto" style="min-width:75px;padding:0px;text-align:left;padding-bottom:4px;"><div  id=Mf >&nbsp;</div></div>
+                                    </div>
+                                    <div class="row" style="padding-left:0px;padding-right:0px;">
+                                        <div class="col-auto" style="min-width:65px;padding:0px;text-align:left;">{{ __('main.txt-v-memused') }}&nbsp;:&nbsp;</div>
+                                        <div class="col-auto" style="min-width:75px;padding:0px;text-align:left;padding-bottom:4px;"><div id=Mu >&nbsp;</div></div>
+                                    </div>
+                            </div></div>
                         </div>
                     </div>
 
@@ -75,7 +91,7 @@
                     itemStyle: { color: [[0.3, '#67e0e3'], [0.7, '#37a2da'], [1, '#fd666d']], shadowColor: '#888888)', shadowBlur: 8, shadowOffsetX: 1, shadowOffsetY: 1 }
                 },
                 detail: {
-                    offsetCenter: [0, '92%'], valueAnimation: true, formatter: '{value}%\n{{ __('main.txt-v-cpua-text') }}', color: '#222222', fontSize: 16
+                    offsetCenter: [0, '92%'], valueAnimation: true, formatter: '{value}%\n{{ __('main.txt-v-cpua-text') }}', color: '#222222', fontSize: 15
                 },
                 data: [{ value: 0 }]
             }]
@@ -107,7 +123,7 @@
                     itemStyle: { color: [[0.3, '#67e0e3'], [0.7, '#37a2da'], [1, '#fd666d']], shadowColor: '#888888)', shadowBlur: 8, shadowOffsetX: 1, shadowOffsetY: 1 }
                 },
                 detail: {
-                    offsetCenter: [0, '92%'], valueAnimation: true, formatter: '{value}%\n{{ __('main.txt-v-mema-text') }}', color: '#222222', fontSize: 16
+                    offsetCenter: [0, '92%'], valueAnimation: true, formatter: '{value}%\n{{ __('main.txt-v-mema-text') }}', color: '#222222', fontSize: 15
                 },
                 data: [{ value: 0 }]
             }]
@@ -153,7 +169,11 @@
                 $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"info_Status",'_token':'{{csrf_token()}}' },//传入后台
                     success: function(result) {  //alert(result); //调试输出服务器返回信息
                         if (result["[OK!]"]==0) {
-                            xCPUa=result["API"]["cpu-all"]; // document.getElementById("HW_CPU").innerHTML=xCPUa+'%';
+                            //console.log(result["API"]);
+                            document.getElementById("Mt").innerHTML=result["API"]["Mem"]["memtotal"];
+                            document.getElementById("Mf").innerHTML=result["API"]["Mem"]["memfree"];
+                            document.getElementById("Mu").innerHTML=result["API"]["Mem"]["memused"];
+                            xCPUa=result["API"]["cpu-all"]; 
                             xCPUs=result["API"]["cpu-cores"];
                             xMEMa=result["API"]["mem-used"];
                             for (var i=0;i<xCPUs;i++) {  xCPUs1[i]='{{ __("main.txt-v-cpus-text") }} '+(i+1); xCPUs2[i]=result["API"]["cpu-"+i]; }
