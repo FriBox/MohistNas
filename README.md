@@ -1,5 +1,6 @@
 # MohistNas
 Open Source Nas System （开源存储系统）
+![Image text](https://github.com/FriBox/MohistNas/raw/main/MohistNas.png)
 
 001.  20211202  注册域名mohistnas.org、mohistnas.com、mohistnas.com.cn、mohistnas.cn、mohistnas.org.cn ，创建虚拟机 Ubuntu 20.04.4 LTS ，开始第一行代码。
 002.  20211203  因在虚拟机中无法获取主板上的传感器信息，改用物理机开始继续编程。确定使用Laravel框架作为WebGui的基础框架，今后可用composer及时对框架和关联组件进行更新。
