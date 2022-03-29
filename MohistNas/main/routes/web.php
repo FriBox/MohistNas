@@ -53,7 +53,7 @@ function Get_UrlData($inurl){
 }
 
 function Get_phpSysinfo($hosturl='https://localhost:6888/',$decode=true) {
-    // 通过phpsysinfo组件获取硬件信息
+    // 通过phpsysinfo组件获取硬件信息，当不再依赖该接口时可去除改函数
     // $HW=Get_Hardware_phpsysinfo($hosturl=URL::secureAsset(''),$decode=true);
     $HW=Get_UrlData($hosturl."phpsysinfo/xml.php?plugin=complete&json");
     if ($HW==true) { $HW=json_decode($HW); }
@@ -67,7 +67,7 @@ function Get_HWSysinfo() {
     $HWS['Mem']=Get_info_Mem();
     $HWS['Net']=Get_info_Net();
     $HWS['Time']=Get_info_Time();
-    $HWS['Status']=Get_info_Status();
+    $HWS['Storage']=Get_info_Storage();
     return $HWS; // 返回所有系统信息
 }
 
@@ -80,43 +80,36 @@ function Get_info_System() {
         $HWS['kernel']=trim(str_replace(array("\r\n", "\r", "\n","\\n","\\l"), "", $HWS['kernel'] ));
     $HWS['virtualizer']=`systemd-detect-virt`; // Linux kernel 信息;
         $HWS['virtualizer']=trim(str_replace(array("\r\n", "\r", "\n","\\n","\\l"), "", $HWS['virtualizer'] ));
+        if( strtolower(trim( $HWS['virtualizer'] ))==strtolower('none')  ) { $HWS['virtualizer']=trans('main.txt-v-nonevm'); } // 虚拟化环境
     $HWS['processes']=trim(`ps -ef  | wc -l`); // 获取当前进程数
         $HWS['processes']=trim(str_replace(array("\r\n", "\r", "\n","\\n","\\l"), "", $HWS['processes'] ));
         $HWS['processes']=$HWS['processes']-1;
-    $HWS['NICs']=trim(`lspci | grep Ethernet | wc -l`); // 获取系统网卡数量
-        $HWS['NICs']=trim(str_replace(array("\r\n", "\r", "\n","\\n","\\l"), "", $HWS['NICs'] ));
+    $HWS['Time']=Get_info_Time();
     return $HWS; // 返回系统信息
 }
 
-function Get_info_Status() {
-    // 获取CPU使用率
-    $xTemp=`mpstat  -o JSON -P ALL 1 1 `; // CPU名称;
-    $xTemp=json_decode($xTemp,TRUE );
-    $HWS['cpu-cores']=$xTemp["sysstat"]['hosts'][0]['number-of-cpus'];
-    $xTempAll=$xTemp["sysstat"]['hosts'][0]['statistics'][0]['cpu-load'];
-    for ($x=0; $x<=$HWS['cpu-cores']; $x++) {
-        if ($x==0) { $xCpuName='all';} else { $xCpuName=$x-1;}
-        if ( round(100-$xTempAll[$x]['idle'],1)<0 ) { $HWS['cpu-'.$xCpuName]=0; } else { $HWS['cpu-'.$xCpuName]=round(100-$xTempAll[$x]['idle'],1); }
-    } 
-    // 获取CPU信息
-    $HWS['Cpu']=Get_info_CPU();
-
-    // 获取内存使用率
-    $HWS['memtotal']=trim(`cat /proc/meminfo | grep 'MemTotal' | uniq`); // 获取内存总数kB
-        $HWS['memtotal']=trim(str_replace(array("MemTotal",":",'kB'), "", $HWS['memtotal'] ));
-        $xMt=$HWS['memtotal'];
-        unset($HWS['memtotal']);
-    $HWS['memfree']=trim(`cat /proc/meminfo | grep 'MemFree' | uniq`); // 获取剩余内存总数kB
-        $HWS['memfree']=trim(str_replace(array("MemFree",":",'kB'), "", $HWS['memfree'] ));
-        $xMf=$HWS['memfree'];
-        unset($HWS['memfree']);
-    $xMu=$xMt-$xMf;
-    $HWS['mem-used']=$xMu/$xMt*100;
-        $HWS['mem-used']=sprintf("%.2f",substr(sprintf("%.4f",$HWS['mem-used']), 0, -2));
-    // 获取内存信息
-    $HWS['Mem']=Get_info_Mem();
-
-    return $HWS; // 返回系统信息
+function Get_info_Time() {
+    // 获取时间相关信息
+    $HWS['sys-timetxt']=`date "+%Y-%m-%d %H:%M:%S %z"`; // Linux系统时间
+        $HWS['sys-timetxt']=rtrim(str_replace(array("\r\n", "\r", "\n","\\n","\\l"), "", $HWS['sys-timetxt'] ));
+    $HWS['sys-uptimetxt']=`uptime -p`; // Linux系统运行时间
+        $xstr   = @file_get_contents('/proc/uptime');
+        $xnum   = floatval($xstr);
+        $xsecs  = fmod($xnum, 60); $xnum = intdiv($xnum, 60);
+        $xmins  = $xnum % 60;      $xnum = intdiv($xnum, 60);
+        $xhours = $xnum % 24;      $xnum = intdiv($xnum, 24);
+        $xdays  = $xnum;
+        $HWS['sys-uptime']=[$xdays,$xhours,$xmins];
+            $HWS['sys-uptimelang']='';
+            if ($xdays>0)  { if ($xdays>1) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xdays.' '.trans('main.txt-v-uptime-ds'); } else { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xdays.' '.trans('main.txt-v-uptime-d'); } }
+            if ($xdays!=0) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].trans('main.txt-v-uptime-dss'); }
+            if ($xhours>0)  { if ($xhours>1) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xhours.' '.trans('main.txt-v-uptime-hs'); } else { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xhours.' '.trans('main.txt-v-uptime-h'); } }
+            if ($xhours!=0) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].trans('main.txt-v-uptime-hss'); }
+            if ($xmins>0)  { if ($xmins>1) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xmins.' '.trans('main.txt-v-uptime-ms'); } else { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xmins.' '.trans('main.txt-v-uptime-m'); } }
+            if ($xmins!=0) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].trans('main.txt-v-uptime-mss'); }
+            if (trim($HWS['sys-uptimelang'])=='') { $HWS['sys-uptimelang']='...'; }
+            $HWS['sys-uptimelang']=trim($HWS['sys-uptimelang']);
+    return $HWS; // 返回时间相关信息
 }
 
 function Get_info_CPU() {
@@ -124,10 +117,18 @@ function Get_info_CPU() {
     $HWS['cpu-name']=`cat /proc/cpuinfo | grep 'model name' |uniq`; // CPU名称;
         $HWS['cpu-name']=rtrim(str_replace(array("model name",":"), "", $HWS['cpu-name'] ));
         $HWS['cpu-name']=trim( preg_replace("/\s(?=\s)/","\\1",$HWS['cpu-name']) );
-    $HWS['cpu-cores']=trim(`grep 'core id' /proc/cpuinfo | sort -u |wc -l`); // CPU核心数;
+    $HWS['cpu-corestxt']=trim(`grep 'core id' /proc/cpuinfo | sort -u |wc -l`); // CPU核心数;
     $HWS['cpu-processor']=trim(`grep 'processor' /proc/cpuinfo | sort -u | wc -l`); // CPU逻辑核心数;
     $HWS['cpu-text']=$HWS['cpu-name'].' , '. $HWS['cpu-processor'].' cores';// CPU详细描述
-    //====================
+    // 获取CPU使用率
+    $xTemp=`mpstat  -o JSON -P ALL 1 1 `; // CPU名称;
+        $xTemp=json_decode($xTemp,TRUE );
+    $HWS['cpu-cores']=$xTemp["sysstat"]['hosts'][0]['number-of-cpus'];
+        $xTempAll=$xTemp["sysstat"]['hosts'][0]['statistics'][0]['cpu-load'];
+        for ($x=0; $x<=$HWS['cpu-cores']; $x++) {
+            if ($x==0) { $xCpuName='all';} else { $xCpuName=$x-1;}
+            if ( round(100-$xTempAll[$x]['idle'],1)<0 ) { $HWS['cpu-'.$xCpuName]=0; } else { $HWS['cpu-'.$xCpuName]=round(100-$xTempAll[$x]['idle'],1); }
+        } 
     return $HWS; // 返回CPU相关信息
 }
 
@@ -181,40 +182,143 @@ function Get_info_Mem() {
         if ($HWS['swapused']/1024>=1) { $xmemstr='GiB'; $HWS['swapused']=$HWS['swapused']/1024; }
         $HWS['swapused']=sprintf("%.2f",substr(sprintf("%.4f",$HWS['swapused']), 0, -2));
         $HWS['swapused']=$HWS['swapused'].' '.$xmemstr;
+    // 获取内存使用率
+    $xMu=$xMt-$xMf;
+    $HWS['mem-used']=$xMu/$xMt*100;
+        $HWS['mem-used']=sprintf("%.2f",substr(sprintf("%.4f",$HWS['mem-used']), 0, -2));
     return $HWS; // 返回内存相关信息
 }
 
 function Get_info_Net() {
+    // 获取网卡流量
+    $vFr=strtoupper ( md5 ( uniqid ( rand (), true ) ) ).rand(10000,99999);
+    $vFc=env('MohistNasCmdCache').'Network.'.$vFr.'.cmd'; $vFcPS='Network.'.$vFr.'.'; $vFcS=env('MohistNasCmd_ifstat');
+    $vFn=env('MohistNasCmdCache').'Network.'.$vFr.'.Status';
+    try {
+        $vCmd='ln -f -s '.$vFcS.'  '.$vFc.' ; chmod +x '.$vFc.' ; ' ;  $vCmd=`$vCmd`;//删除程序文件链接
+        $vCmd='( '.$vFc.' -aTnwq 1 > '.$vFn.' &); sleep 1.4s ; killall -9 '.$vFcPS.' ; '. 'cat '.$vFn.' ; ' ;  $vCmd=`$vCmd`; // 获取网卡流量后退出
+        $vFlow=explode("\n", $vCmd );
+        if ( count($vFlow)>0 ) {
+            $vFlow1=$vFlow[0]; // 网卡名称
+                $vFlow1=explode(" ", $vFlow1 ); $vFlow1 = array_filter($vFlow1); foreach($vFlow1 as $value) { $vvFlow1[] = $value; } $vFlow1=$vvFlow1;
+            $vFlow2=$vFlow[1]; // 进出流量单位
+                $vFlow2=explode(" ", $vFlow2 ); $vFlow2 = array_filter($vFlow2); foreach($vFlow2 as $value) { $vvFlow2[] = $value; } $vFlow2=$vvFlow2;
+            $vFlow3=$vFlow[2]; // 进出流量
+                $vFlow3=trim(str_replace(array("\r\n", "\r", "\n","\\n","\\l"), "", $vFlow3 ));
+                $vFlow3=explode(" ", $vFlow3 ); $vFlow3 = array_filter($vFlow3); foreach($vFlow3 as $value) { $vvFlow3[] = $value; } $vFlow3=$vvFlow3;
+            $vNCount=count($vFlow1);
+            $HWS['Flow']['Count']=$vNCount;
+            for ($x=0; $x<$vNCount; $x++) {
+                $HWS['Flow'][$vFlow1[$x]]['Name']=$vFlow1[$x];
+                $HWS['Flow'][$vFlow1[$x]]['Index']=$x;
+                $HWS['Flow'][$vFlow1[$x]]['in']=$vFlow3[$x*2].$vFlow2[$x*4]; // 入流量(含单位)
+                $HWS['Flow'][$vFlow1[$x]]['Flow-'.$vFlow2[$x*4+1]]=$vFlow3[$x*2]; // 入流量
+                $HWS['Flow'][$vFlow1[$x]]['Rate-'.$vFlow2[$x*4+1]]=$vFlow2[$x*4]; // 入单位)
+                $HWS['Flow'][$vFlow1[$x]]['out']=$vFlow3[$x*2+1].$vFlow2[$x*4+2]; // 出流量(含单位)
+                $HWS['Flow'][$vFlow1[$x]]['Flow-'.$vFlow2[$x*4+3]]=$vFlow3[$x*2+1]; // 出流量
+                $HWS['Flow'][$vFlow1[$x]]['Rate-'.$vFlow2[$x*4+3]]=$vFlow2[$x*4+2]; // 出单位)
+            }
+            $HWS['Flow']['Status']='OK!';
+        } else {
+            $HWS['Flow']['Status']='ERR';
+        }
+    } catch (Exception $e) {
+        $HWS['Flow']['Status']='ERR';
+    }
+    $vCmd='chmod 777 '.$vFc.' ; rm -rf '.$vFc.' ; ';  $vCmd=`$vCmd`;//删除程序文件链接
+    $vCmd='chmod 777 '.$vFn.' ; rm -rf '.$vFn.' ; ';  $vCmd=`$vCmd`;//删除网卡流量信息缓存文件
     // 获取网络相关信息
-    $HWS['NICs']=trim(`lspci | grep Ethernet | wc -l`); // 获取系统网卡数量
-    // (ifstat -aTwS >$MohistNasCache/Network.Status &); sleep 1s; killall -9 ifstat;
+    $HWS['NICs']=`sudo lshw -class network | grep "logical name:" | wc -l`; // 获取系统物理网卡数量
+    $HWS['NICs']=trim(str_replace(array("\r\n", "\r", "\n","\\n","\\l"), "", trim($HWS['NICs']) ));
+    $NetTmp=`sudo lshw -class network;` ; // 获取网卡信息
+        //$vCmd='sudo lshw -class network > '.env('MohistNasCmdCache').'Network.Log'.' ; ' ;  $vCmd=`$vCmd`;
+    try {
+        $NetTmp=explode(" *-",$NetTmp);
+        for ($x=1; $x<=$HWS['NICs']; $x++) {
+            //第一部分，网卡接口类型和是否启用
+            $NetVal=explode("\n", $NetTmp[$x] );
+            if(strpos( strtolower(trim($NetVal[0])) , strtolower('DISABLED') ) == false){ $HWS['NICs-'.$x-1]['Status']='ENABLED'; } else { $HWS['NICs-'.$x-1]['Status']='DISABLED'; } //网卡启用状态
+            //第二部分，网卡基本信息
+            $NetValz=substr( $NetTmp[$x] , strlen( $NetVal[0]."\n" ) , -1);
+            $str =$NetValz; //开始正则表达式查找
+                // logical name: Name 网卡系统名称
+                $start = 'logical name:'; $end = "\n"; $vTmpr=preg_match( '#'.preg_quote($start).'(.+?)'.preg_quote($end).'#s' , $str,$vTmp);
+                if ( $vTmpr==1 ) { $HWS['NICs-'.$x-1]['Name']=trim($vTmp[1]); } else { $HWS['NICs-'.$x-1]['Name']=''; };
+                $vName=$HWS['NICs-'.$x-1]['Name'];
+                // vendor: Factory 网卡品牌
+                $start = 'vendor:'; $end = "\n"; $vTmpr=preg_match( '#'.preg_quote($start).'(.+?)'.preg_quote($end).'#s' , $str,$vTmp);
+                if ( $vTmpr==1 ) { $HWS['NICs-'.$x-1]['Factory']=trim($vTmp[1]); } else { $HWS['NICs-'.$x-1]['Factory']=''; };
+                // product: Model 网卡型号
+                $start = 'product:'; $end = "\n"; $vTmpr=preg_match( '#'.preg_quote($start).'(.+?)'.preg_quote($end).'#s' , $str,$vTmp);
+                if ($vTmpr==1) {$HWS['NICs-'.$x-1]['Model']=trim($vTmp[1]); } else {$HWS['NICs-'.$x-1]['Model']=''; };
+                // serial: Mac 网卡Mac地址
+                $start = 'serial:'; $end = "\n"; $vTmpr=preg_match( '#'.preg_quote($start).'(.+?)'.preg_quote($end).'#s' , $str,$vTmp);
+                if ($vTmpr==1) {$HWS['NICs-'.$x-1]['Mac']=trim($vTmp[1]); } else {$HWS['NICs-'.$x-1]['Mac']=''; };
+                // capacity: Capacity 网卡最大速率
+                $start = 'capacity:'; $end = "\n"; $vTmpr=preg_match( '#'.preg_quote($start).'(.+?)'.preg_quote($end).'#s' , $str,$vTmp);
+                if ($vTmpr==1) {$HWS['NICs-'.$x-1]['Capacity']=trim($vTmp[1]); } else {$HWS['NICs-'.$x-1]['Capacity']=''; };
+                // width: Width 网卡位宽
+                $start = 'width:'; $end = "\n"; $vTmpr=preg_match( '#'.preg_quote($start).'(.+?)'.preg_quote($end).'#s' , $str,$vTmp);
+                if ($vTmpr==1) {$HWS['NICs-'.$x-1]['Width']=trim($vTmp[1]); } else {$HWS['NICs-'.$x-1]['Width']=''; };
+                // clock: Width 网卡时钟频率
+                $start = 'clock:'; $end = "\n"; $vTmpr=preg_match( '#'.preg_quote($start).'(.+?)'.preg_quote($end).'#s' , $str,$vTmp);
+                if ($vTmpr==1) {$HWS['NICs-'.$x-1]['Clock']=trim($vTmp[1]); } else {$HWS['NICs-'.$x-1]['Clock']=''; };
+                // bus info: Interface 网卡接口类型
+                $start = 'bus info:'; $end = "@"; $vTmpr=preg_match( '#'.preg_quote($start).'(.+?)'.preg_quote($end).'#s' , $str,$vTmp);
+                if ($vTmpr==1) {$HWS['NICs-'.$x-1]['Interface']=strtoupper(trim($vTmp[1])); } else {$HWS['NICs-'.$x-1]['Interface']=''; };
+                // 网卡详细信息
+                $start = 'configuration:'; $end = "\n"; $vTmpr=preg_match( '#'.preg_quote($start).'(.+?)'.preg_quote($end).'#s' , $str,$vTmp);
+                if ($vTmpr==1) {$HWS['NICs-'.$x-1]['Cfg']=trim($vTmp[1]); } else {$HWS['NICs-'.$x-1]['Cfg']=''; };
+                if ( trim($HWS['NICs-'.$x-1]['Cfg'])!='') {
+                    $vTmp=trim($HWS['NICs-'.$x-1]['Cfg']);
+                        unset($HWS['NICs-'.$x-1]['Cfg']);
+                        $str=$vTmp;
+                        $sp=" ";
+                        $kv="=";
+                        $arr = str_replace(array($kv,$sp),array('"=>"','","'),'array("'.$str.'")');
+                        eval("\$arr"." = $arr;");
+                        $NetValx=$arr;
+                    $HWS['NICs-'.$x-1]['Speed']=trim($NetValx['speed']); //网卡当前速率
+                    if(strpos( strtolower(trim( trim($NetValx['link']) )) , strtolower('yes') ) !== false){ $HWS['NICs-'.$x-1]['Link']=true; }else{ $HWS['NICs-'.$x-1]['Link']=false; }//网卡是否连接
+                    $HWS['NICs-'.$x-1]['Driver']=trim($NetValx['driver']); //网卡驱动名称
+                    $HWS['NICs-'.$x-1]['DriverVer']=trim($NetValx['driverversion']); //网卡驱动版本
+                    if(strpos( strtolower(trim( trim($NetValx['autonegotiation']) )) , strtolower('on') ) !== false){ $HWS['NICs-'.$x-1]['Autonegotiation']=true; }else{ $HWS['NICs-'.$x-1]['Autonegotiation']=false; }//网卡是否开启自动协商
+                    if(strpos( strtolower(trim( trim($NetValx['duplex']) )) , strtolower('full') ) !== false){ $HWS['NICs-'.$x-1]['Duplex']=true; }else{ $HWS['NICs-'.$x-1]['Duplex']=false; }//网卡是否全双工
+                } else {
+                    $HWS['NICs-'.$x-1]['Speed']=''; //网卡当前速率
+                    $HWS['NICs-'.$x-1]['Link']=''; //网卡是否连接
+                    $HWS['NICs-'.$x-1]['Driver']=''; //网卡驱动名称
+                    $HWS['NICs-'.$x-1]['DriverVer']=''; //网卡驱动版本
+                    $HWS['NICs-'.$x-1]['Autonegotiation']=false; //网卡是否开启自动协商
+                    $HWS['NICs-'.$x-1]['Duplex']=false; //网卡是否全双工
+                }
+            //第三部分，获取网卡IP
+            $vCmd='ip addr show '.$vName.' | grep -i -e inet -e inet6 | awk -F \' \' \'{printf $2", "}\' ';  $vCmd=`$vCmd`;
+            $HWS['NICs-'.$x-1]['IP']=rtrim(trim($vCmd), ","); // if(array_key_exists("ip",$NetValx)) { $HWS['NICs-'.$x-1]['IP']=trim($NetValx['ip']); } else { $HWS['NICs-'.$x-1]['IP']=''; } //网卡IP
+            //该网卡信息结束
+            $HWS['NICs-'.$x-1]['End']='[End]';
+            //复制网卡信息 
+            $HWS[$vName]=$HWS['NICs-'.$x-1];
+        }
+        $HWS['NIC']['Status']='OK!';
+    } catch (Exception $e) {
+        $HWS['NIC']['Status']='ERR';
+    }
     return $HWS; // 返回网络相关信息
 }
 
-function Get_info_Time() {
-    // 获取时间相关信息
-    $HWS['sys-timetxt']=`date "+%Y-%m-%d %H:%M:%S %z"`; // Linux系统时间
-        $HWS['sys-timetxt']=rtrim(str_replace(array("\r\n", "\r", "\n","\\n","\\l"), "", $HWS['sys-timetxt'] ));
-    $HWS['sys-uptimetxt']=`uptime -p`; // Linux系统运行时间
-        $xstr   = @file_get_contents('/proc/uptime');
-        $xnum   = floatval($xstr);
-        $xsecs  = fmod($xnum, 60); $xnum = intdiv($xnum, 60);
-        $xmins  = $xnum % 60;      $xnum = intdiv($xnum, 60);
-        $xhours = $xnum % 24;      $xnum = intdiv($xnum, 24);
-        $xdays  = $xnum;
-        $HWS['sys-uptime']=[$xdays,$xhours,$xmins];
-            $HWS['sys-uptimelang']='';
-            if ($xdays>0)  { if ($xdays>1) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xdays.' '.trans('main.txt-v-uptime-ds'); } else { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xdays.' '.trans('main.txt-v-uptime-d'); } }
-            if ($xdays!=0) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].trans('main.txt-v-uptime-dss'); }
-            if ($xhours>0)  { if ($xhours>1) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xhours.' '.trans('main.txt-v-uptime-hs'); } else { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xhours.' '.trans('main.txt-v-uptime-h'); } }
-            if ($xhours!=0) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].trans('main.txt-v-uptime-hss'); }
-            if ($xmins>0)  { if ($xmins>1) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xmins.' '.trans('main.txt-v-uptime-ms'); } else { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].' '.$xmins.' '.trans('main.txt-v-uptime-m'); } }
-            if ($xmins!=0) { $HWS['sys-uptimelang']=$HWS['sys-uptimelang'].trans('main.txt-v-uptime-mss'); }
-            if (trim($HWS['sys-uptimelang'])=='') { $HWS['sys-uptimelang']='...'; }
-            $HWS['sys-uptimelang']=trim($HWS['sys-uptimelang']);
-    return $HWS; // 返回时间相关信息
+function Get_info_Storage() {
+    // 获取存储相关信息
+    $HWS['Storage']="Test";
+    return $HWS; // 返回存储相关信息
 }
 
+function Get_info_Status() {
+    // 获取CPU和内存相关信息
+    $HWS['Cpu']=Get_info_CPU();// 获取CPU信息
+    $HWS['Mem']=Get_info_Mem();// 获取内存信息
+    return $HWS; // 返回系统信息
+}
 
 /* ======  自定义全局变量  ====== */
 global $qLangs; //系统支持的全部语言
@@ -340,6 +444,7 @@ Route::match(['get','post'],'/getapi',function(Request $request){   // 系统登
         else if  ( strtolower(trim($AValue))==strtolower(trim('info_Mem'))  ) { $Data['API']=Get_info_Mem();  $Data['[OK!]']=0; }
         else if  ( strtolower(trim($AValue))==strtolower(trim('info_Net'))  ) { $Data['API']=Get_info_Net();  $Data['[OK!]']=0; }
         else if  ( strtolower(trim($AValue))==strtolower(trim('info_Time'))  ) { $Data['API']=Get_info_Time();  $Data['[OK!]']=0; }
+        else if  ( strtolower(trim($AValue))==strtolower(trim('info_Storage'))  ) { $Data['API']=Get_info_Storage();  $Data['[OK!]']=0; }
         else if  ( strtolower(trim($AValue))==strtolower(trim('info_Status'))  ) { $Data['API']=Get_info_Status();  $Data['[OK!]']=0; }
         else { $Data['API']=''; $Data['[OK!]']=-1; } //参数错误，输出空数据
     }
@@ -407,6 +512,7 @@ Route::get('/log', function (Request $request) {   // 日志页面
         $xU=trim(Session::get('User','')); $xP=trim(Session::get('Pass',''));
         $xV=Chk_Authenticate_Session($xU,$xP); if ($xV[0]==false) { Session::forget(['User','Pass']); return redirect('/login'); /* 用户名密码验证失败 , 重定向至登录页面; */ }
     // 密码验证正确，开始输出控制面板 ===>>>
+    $Data['xSysInfo']=Get_info_Net();
     Log::info('打开控制面板！');
     $Data['xUser']=trim($xV[1]); return view('log',$Data);//输出页面;
     /*[End]*/

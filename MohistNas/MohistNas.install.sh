@@ -7,7 +7,7 @@
     sudo add-apt-repository -y ppa:ondrej/php
     apt update
     #安装基本组件
-    apt -y install ntp ntpdate openssl aptitude whois net-tools perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python unzip
+    apt -y install ntp ntpdate openssl aptitude whois net-tools curl ifstat sysstat perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python unzip
     apt -y install apache2
     sudo a2enmod rewrite
     sudo a2enmod ssl
@@ -27,8 +27,8 @@
         export https_proxy='192.168.100.253:6004';
         export http_proxy='192.168.100.253:6004';
         #安装Webmin
-        wget http://prdownloads.sourceforge.net/webadmin/webmin_1.984_all.deb
-        dpkg --install ./webmin_1.984_all.deb
+        #wget http://prdownloads.sourceforge.net/webadmin/webmin_1.990_all.deb
+        dpkg --install ./webmin_1.990_all.deb
 
     #安装Composer
     cd /root
@@ -60,17 +60,18 @@
     then
         echo 'Edit >> /etc/sudoers ';
         sed -i "/^www-data*/d" /etc/sudoers
-        echo "www-data ALL=(ALL) NOPASSWD:ALL"  >>  '/etc/sudoers' ; 
+        echo "www-data ALL=(ALL) NOPASSWD : ALL"  >>  '/etc/sudoers' ; 
     else
         echo 'Add >> /etc/sudoers ';
         echo ""  >>  '/etc/sudoers' ; 
-        echo "www-data ALL=(ALL) NOPASSWD:ALL"  >>  '/etc/sudoers' ; 
+        echo "www-data ALL=(ALL) NOPASSWD : ALL"  >>  '/etc/sudoers' ; 
     fi
     systemctl restart apache2
     #配置开启装载内存盘
     if (( cat '/usr/lib/systemd/system/rc-local.service' | grep "[Install]" > /dev/null ))
     then
         #可能已经有了开机启动的[Install]内容
+        echo 'Edit >> /usr/lib/systemd/system/rc-local.service ';
     else
         echo 'Add >> rc.local ';
         echo ""  >>  '/usr/lib/systemd/system/rc-local.service' ; 
