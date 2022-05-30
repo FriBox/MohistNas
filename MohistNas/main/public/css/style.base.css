@@ -1,0 +1,237 @@
+@charset "utf-8";
+/* CSS Document : style.base.css */
+
+body {
+    background-color: #F7F9FB;
+    font-family: '微软雅黑','黑体', Tahoma, Geneva, sans-serif;
+    min-width: 1024px;
+}
+
+div.pagemain {
+    margin: 0 auto;
+    width: 1024px;
+    min-height: 480px;
+    border: 0px;
+}
+
+div.pageindex {
+    width: 100%;
+    min-height: 480px;
+    border: 0px;
+}
+
+div.login-logo {
+    margin: 0 auto;
+    padding-top: 128px;
+    padding-bottom: 18px;
+    width: 600px;
+}
+
+div.login-main {
+    margin: 0 auto;
+    padding: 20px;
+    width: 600px;
+    height: 416px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 2px 3px 7px #d3d0d0;
+}
+
+div.login-from {
+    margin: 0 auto;
+    padding-top: 38px;
+    width: 360px;
+}
+
+div.login-Copyright {
+    margin: 0 auto;
+    padding-top: 20px;
+    padding-left: 10px;
+    width: 600px;
+    height: 60px;
+    font-size: 14px;
+}
+
+.login-Copyright-txt {
+    color: #888888;
+    text-shadow: 1px 2px 1px #d5d5d5;
+}
+
+.TextLabel1 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 2px;
+    color: #646464;
+    text-align: left;
+    font-size: 18px;
+}
+
+.TextControl1 {
+    display: inline-block;
+    margin-bottom: 15px;
+    padding-left: 8px;
+    width: 350px;
+    height: 32px;
+    border: 0;
+    border-bottom: 1px solid #9a9a9a;
+    border-radius: 5px;
+    background-color: #F7F9FB;
+    font-size: 18px;
+    line-height: 30px;
+}
+
+.tooltip-inner {
+    max-width: 400px;
+}
+
+.LoginErrorText {
+    overflow: hidden;
+    padding-top: 14px;
+    width: 100%;
+    color: red;
+    word-wrap: break-word;
+    font-size: 12px;
+    word-break: break-all;
+}
+
+.AdminMenuItem {
+    display: inline-block;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    width: 190px;
+    color: #4a4a4a;
+    text-decoration: none;
+    letter-spacing: 1px;
+    font-size: 14px;
+    line-height: 18px;
+    text-shadow: 1px 0px 1px #cccccc;
+}
+
+.AdminMenuItem:active {
+    color: #4a4a4a;
+    text-decoration: none;
+}
+
+.AdminMenuItem:visited {
+    color: #4a4a4a;
+    text-decoration: none;
+}
+
+.AdminMenuItem:hover {
+    color: #FF6928;
+    text-decoration: none;
+}
+
+.AdminMenuItemNow {
+    display: inline-block;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    width: 190px;
+    border-radius: 8px;
+    background-color: #f1f1f1;
+    color: #FF6928;
+    text-decoration: none;
+    letter-spacing: 1px;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 18px;
+    text-shadow: 2px 2px 0px #ffffff;
+}
+
+.AdminMenuItemNow:active {
+    color: #FF6928;
+    text-decoration: none;
+}
+
+.AdminMenuItemNow:visited {
+    color: #FF6928;
+    text-decoration: none;
+}
+
+.AdminMenuItemNow:hover {
+    color: #FF6928;
+    text-decoration: none;
+}
+
+div.Panel1 {
+    margin: 0 auto;
+    padding: 8px;
+    min-width: 450px;
+    max-width: 645px;
+    min-height: 308px;
+    border-radius: 10px;
+    background-color: #fdfdfe;
+    box-shadow: 2px 2px 5px #d3d0d0;
+    margin: 10px;
+    font-size: 14px;
+    color: #4e4e4e;
+}
+
+div.Panel2 {
+    margin: 0 auto;
+    padding: 8px;
+    min-width: 450px;
+    max-width: 645px;
+    min-height: 415px;
+    border-radius: 10px;
+    background-color: #fdfdfe;
+    box-shadow: 2px 2px 5px #d3d0d0;
+    margin: 10px;
+    font-size: 14px;
+    color: #4e4e4e;
+}
+
+.PanelTitle {
+    display: inline-block;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    width: 100%;
+    border-radius: 4px;
+    background-color: #f3f3f3;
+    color: #FF6928;
+    text-decoration: none;
+    letter-spacing: 1px;
+    font-weight: bold;
+    line-height: 22px;
+    box-shadow: 1px 1px 2px #d3d0d0;
+    text-align: left;
+    text-shadow: 2px 2px 0px #ffffff;
+    margin-bottom: 8px;
+}
+
+.PanelTextLine {
+    font-size: 13px;
+    display: flex;
+    margin-left: 18px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    letter-spacing: 0rem;
+    text-align: left;
+    line-height: 22px;
+}
+
+.PanelTextName {
+    min-width: 120px;
+}
+
+@media (min-width:1200px) and (max-width: 1450px){
+    div.Panel1 {
+        min-width: 435px;
+    }
+    div.Panel2 {
+        min-width: 435px;
+    }
+    .PanelTextName {
+        min-width: 100px;
+    }
+    .PanelTextLine {
+        margin-left: 8px;
+        font-size: 12px;
+        letter-spacing: -0.015rem;
+    }
+}
