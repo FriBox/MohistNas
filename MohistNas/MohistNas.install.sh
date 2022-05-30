@@ -1,7 +1,15 @@
 #设置系统依赖等组件
-    #设置密码
-    sudo mkpasswd -m sha-512 -S "MohistNasSalt" "MohistNas" ;
-    
+
+: <<'COMMENT'
+    设置密码相关
+    sudo mkpasswd -m sha-512 -S "MohistNasSalt" "MohistNas" ; #生成密码
+    echo -e "MohistNas\nMohistNas" | passwd root ; #无需确认修改密码（$salt太短，不符合要求）
+
+    echo -n "root:" >>/MohistNas/temp_passwd.txt && \
+    mkpasswd -m sha-512 -S "MohistNasSalt" "MohistNas" >>/MohistNas/temp_passwd.txt && \
+    chpasswd -e < /MohistNas/temp_passwd.txt && \
+    rm -rf /MohistNas/temp_passwd.txt ; #无需确认修改密码
+COMMENT
 
     #系统基本配置
     cp -rf /MohistNas/sshd_config.conf /etc/ssh/sshd_config
