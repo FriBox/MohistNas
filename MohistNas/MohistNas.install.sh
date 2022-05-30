@@ -1,6 +1,7 @@
 #设置系统依赖等组件
     #设置密码
-    echo mkpasswd -m sha-512 -S "MohistNas" "MohistNas" | passwd --stdin root
+    sudo mkpasswd -m sha-512 -S "MohistNasSalt" "MohistNas" ;
+    
 
     #系统基本配置
     cp -rf /MohistNas/sshd_config.conf /etc/ssh/sshd_config
