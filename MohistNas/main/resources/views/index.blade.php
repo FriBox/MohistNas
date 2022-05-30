@@ -1,5 +1,5 @@
 @include('part-top')
-    <?php $CsT='';$CsV=''; for ($x=0; $x<$xSysInfo['Cpu']['cpu-cores']; $x++) { $CsT=$CsT.'"'.__("main.txt-v-cpus-text").' '.($x+1).'",'; $CsV=$CsV.' 0, '; }; $CsT=trim($CsT); $CsV=trim($CsV); ?>
+    <?php $CsT='';$CsV=''; for ($x=0; $x<$xSysInfo['CpuState']['cpu-cores']; $x++) { $CsT=$CsT.'"'.__("main.txt-v-cpus-text").' '.($x+1).'",'; $CsV=$CsV.' 0, '; }; $CsT=trim($CsT); $CsV=trim($CsV); ?>
     <div class="container-fluid"><div class="row"><!--  行1 Begin -->
         <!-- 1.系统信息 -->
         <div class="col-xl-6"> <center><div class="Panel1">
@@ -7,7 +7,7 @@
             <p class="PanelTextLine"><span class="PanelTextName">{{ __('main.txt-v-host-name') }}</span>&nbsp;:&nbsp;<span id='Sys_host-name'>{{$xSysInfo['Sys']['host-name']}}</span></p>
             <p class="PanelTextLine"><span class="PanelTextName">{{ __('main.txt-v-sys-name') }}</span>&nbsp;:&nbsp;<span id='Sys_sys-name'>{{$xSysInfo['Sys']['sys-name']}}</span></p>
             <p class="PanelTextLine"><span class="PanelTextName">{{ __('main.txt-v-kernel') }}</span>&nbsp;:&nbsp;<span id='Sys_kernel'>{{$xSysInfo['Sys']['kernel']}}</span></p>
-            <p class="PanelTextLine"><span class="PanelTextName">{{ __('main.txt-v-cpu-text') }}</span>&nbsp;:&nbsp;<span id='Cpu_cpu-text'>{{$xSysInfo['Cpu']['cpu-text']}}</span></p>
+            <p class="PanelTextLine"><span class="PanelTextName">{{ __('main.txt-v-cpu-text') }}</span>&nbsp;:&nbsp;<span id='Cpu_cpu-text'>{{$xSysInfo['CpuModel']['cpu-text']}}</span></p>
             <p class="PanelTextLine"><span class="PanelTextName">{{ __('main.txt-v-memory-text') }}</span>&nbsp;:&nbsp;<span id='Mem_memtext'>{{$xSysInfo['Mem']['memtotal']}}&nbsp;&nbsp;(&nbsp;{{ __('main.txt-v-swap-text') }}&nbsp;:&nbsp;{{$xSysInfo['Mem']['swaptotal']}}&nbsp;)</span></p>
             <p class="PanelTextLine"><span class="PanelTextName">{{ __('main.txt-v-uptime-text') }}</span>&nbsp;:&nbsp;<span id='Time_sys-uptimelang'>{{$xSysInfo['Time']['sys-uptimelang']}}</span></p>
             <p class="PanelTextLine"><span class="PanelTextName" >{{ __('main.txt-v-virtualizer-text') }}</span>&nbsp;:&nbsp;<span id='Sys_virtualizer'>{{$xSysInfo['Sys']['virtualizer']}}</span></p>
@@ -223,11 +223,11 @@
     <script type=text/javascript>
         function RefreshStatusSys(){ //获取网络信息
             document.getElementById("Sys_spinner").style.visibility="visible";
-                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"info_System",'_token':'{{csrf_token()}}' },//传入后台
+                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[Sys][Time]",'_token':'{{csrf_token()}}' },//传入后台
                     success: function(result) {  //alert(result); //调试输出服务器返回信息
                         if (result["[OK!]"]==0) {  //console.log(result["API"]);
-                            document.getElementById("Time_sys-uptimelang").innerHTML=result["API"]["Time"]["sys-uptimelang"];//运行时间
-                            document.getElementById("Sys_processes").innerHTML=result["API"]["processes"];//进程数
+                            document.getElementById("Time_sys-uptimelang").innerHTML=result["Time"]["sys-uptimelang"];//运行时间
+                            document.getElementById("Sys_processes").innerHTML=result["Sys"]["processes"];//进程数
                             return ;
                         } 
                     }, error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -239,7 +239,7 @@
 
         function RefreshStatusStorage(){ //获取存储信息
             document.getElementById("Storage_spinner").style.visibility="visible";
-                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"info_Storage",'_token':'{{csrf_token()}}' },//传入后台
+                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[Storage]",'_token':'{{csrf_token()}}' },//传入后台
                     success: function(result) {  //alert(result); //调试输出服务器返回信息
                         if (result["[OK!]"]==0) {  //console.log(result["API"]);
                             //这里插入存储信息相关代码
@@ -255,17 +255,17 @@
         function RefreshStatusCM(){ //获取CPU和内存信息
             var xCPUa=0; var xMEMa=0; var xCPUs=0; var xCPUs1=[]; var xCPUs2=[];
             document.getElementById("CAndM_spinner").style.visibility="visible";
-                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"info_Status",'_token':'{{csrf_token()}}' },//传入后台
+                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[CpuState][Mem]",'_token':'{{csrf_token()}}' },//传入后台
                     success: function(result) {  //alert(result); //调试输出服务器返回信息
-                        if (result["[OK!]"]==0) {  //console.log(result["API"]);
-                            document.getElementById("Mt").innerHTML=result["API"]["Mem"]["memtotal"];//物理内存
-                            document.getElementById("Mf").innerHTML=result["API"]["Mem"]["memfree"];//可用内存
-                            document.getElementById("Mu").innerHTML=result["API"]["Mem"]["memused"];//已用内存
-                            document.getElementById("Mem_memtext").innerHTML=result["API"]["Mem"]["memtotal"]+"&nbsp;&nbsp;(&nbsp;{{ __('main.txt-v-swap-text') }}&nbsp;:&nbsp;"+result["API"]["Mem"]["swaptotal"]+"&nbsp;)";//内存信息
-                            xCPUa=result["API"]["Cpu"]["cpu-all"]; 
-                            xCPUs=result["API"]["Cpu"]["cpu-cores"];
-                            xMEMa=result["API"]["Mem"]["mem-used"];
-                            for (var i=0;i<xCPUs;i++) {  xCPUs1[i]='{{ __("main.txt-v-cpus-text") }} '+(i+1); xCPUs2[i]=result["API"]["Cpu"]["cpu-"+i]; }
+                        if (result["[OK!]"]==0) {  //console.log(result);
+                            document.getElementById("Mt").innerHTML=result["Mem"]["memtotal"];//物理内存
+                            document.getElementById("Mf").innerHTML=result["Mem"]["memfree"];//可用内存
+                            document.getElementById("Mu").innerHTML=result["Mem"]["memused"];//已用内存
+                            document.getElementById("Mem_memtext").innerHTML=result["Mem"]["memtotal"]+"&nbsp;&nbsp;(&nbsp;{{ __('main.txt-v-swap-text') }}&nbsp;:&nbsp;"+result["Mem"]["swaptotal"]+"&nbsp;)";//内存信息
+                            xCPUa=result["CpuState"]["cpu-all"]; 
+                            xCPUs=result["CpuState"]["cpu-cores"];
+                            xMEMa=result["Mem"]["mem-used"];
+                            for (var i=0;i<xCPUs;i++) {  xCPUs1[i]='{{ __("main.txt-v-cpus-text") }} '+(i+1); xCPUs2[i]=result["CpuState"]["cpu-"+i]; }
                             //设置图表组件数据
                             CpuCharts.setOption({ series: [ { data: [ { value: xCPUa } ]  } ] });
                             MemCharts.setOption({ series: [ { data: [ { value: xMEMa } ]  } ] });
@@ -282,17 +282,17 @@
         function RefreshStatusNet(){ //获取网络信息
             var xNICs=0;
             document.getElementById("Net_spinner").style.visibility="visible";
-                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"info_Net",'_token':'{{csrf_token()}}' },//传入后台
+                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[Net]",'_token':'{{csrf_token()}}' },//传入后台
                     success: function(result) {  //alert(result); //调试输出服务器返回信息
                         //document.getElementById("NetTest").innerHTML= JSON.stringify(result); //测试网络信息
-                        if (result["[OK!]"]==0) {  //console.log(result["API"]);
-                            if ( result["API"]["NIC"]["Status"]=="OK!" ) {
-                                document.getElementById("Net_NICs").innerHTML=result["API"]["NICs"];//网卡数量
-                                xNICs=result["API"]["NICs"]; 
-                                if ( result["API"]["Flow"]["Status"]=="OK!" ) {
+                        if (result["[OK!]"]==0) {  //console.log(result["Net"]);
+                            if ( result["Net"]["NIC"]["Status"]=="OK!" ) {
+                                document.getElementById("Net_NICs").innerHTML=result["Net"]["NICs"];//网卡数量
+                                xNICs=result["Net"]["NICs"]; 
+                                if ( result["Net"]["Flow"]["Status"]=="OK!" ) {
                                     //设置网卡合计流量图表组件数据
-                                    xNTvd=result['API']['Flow']['Total']['Flow-in']; xNTvd = Math.floor(xNTvd * 100) / 100; xNTvu=result['API']['Flow']['Total']['Flow-out']; xNTvu = Math.floor(xNTvu * 100) / 100;
-                                    xNTvt='{{ __('main.txt-v-NetinTxt') }}' +' : '+ result['API']['Flow']['Total']['in'] +' , '+'{{ __('main.txt-v-NetoutTxt') }}'+' : '+ result['API']['Flow']['Total']['out'];
+                                    xNTvd=result['Net']['Flow']['Total']['Flow-in']; xNTvd = Math.floor(xNTvd * 100) / 100; xNTvu=result['Net']['Flow']['Total']['Flow-out']; xNTvu = Math.floor(xNTvu * 100) / 100;
+                                    xNTvt='{{ __('main.txt-v-NetinTxt') }}' +' : '+ result['Net']['Flow']['Total']['in'] +' , '+'{{ __('main.txt-v-NetoutTxt') }}'+' : '+ result['Net']['Flow']['Total']['out'];
                                     NetTd.shift(); NetTu.shift();  NetTd.push(xNTvd); NetTu.push(xNTvu);
                                     vMy=NetTd.concat(NetTu);  vMy=Math.max.apply(null, vMy);//求刻度最大值
                                     vMy=Math.ceil( vMy / 500 ) * 500; vMy=parseInt(vMy)+500; //最大值取整
@@ -303,16 +303,16 @@
                                         echo "\r\n";
                                         for ($x=0; $x<=$xSysInfo['Net']['NICs']-1; $x++) {
                                             echo "                                        //设置网卡".$x."流量图表组件数据\r\n";
-                                            echo "                                        document.getElementById('network-Title-".$x."').innerHTML= result['API']['NICs-".$x."']['Name'] +' : '+ result['API']['NICs-".$x."']['Speed'] +' '+ result['API']['NICs-".$x."']['Factory'] +' - '+ result['API']['NICs-".$x."']['Model'] ; \r\n";
-                                            echo "                                        vNetDis=' '; if ( result['API'][ result['API']['NICs-'+".$x."]['Name'] ]['Link']==false ) { vNetDis=' ".__('main.txt-v-NetDisabled') ."'; } \r\n";
-                                            echo "                                        xNTvd".$x."=result['API']['Flow'][ result['API']['NICs-'+".$x."]['Name'] ]['Flow-in']; xNTvd".$x."= Math.floor(xNTvd".$x." * 100) / 100; xNTvu".$x."=result['API']['Flow'][ result['API']['NICs-'+".$x."]['Name']]['Flow-out']; xNTvu".$x."= Math.floor(xNTvu".$x." * 100) / 100; \r\n";
-                                            echo "                                        xNTvt".$x."='". __('main.txt-v-NetinTxt') ."' +' : '+ result['API']['Flow'][ result['API']['NICs-'+".$x."]['Name']]['in'] +' , '+'". __('main.txt-v-NetoutTxt') ."'+' : '+ result['API']['Flow'][ result['API']['NICs-'+".$x."]['Name']]['out'] + vNetDis ; \r\n";
+                                            echo "                                        document.getElementById('network-Title-".$x."').innerHTML= result['Net']['NICs-".$x."']['Name'] +' : '+ result['Net']['NICs-".$x."']['Speed'] +' '+ result['Net']['NICs-".$x."']['Factory'] +' - '+ result['Net']['NICs-".$x."']['Model'] ; \r\n";
+                                            echo "                                        vNetDis=' '; if ( result['Net'][ result['Net']['NICs-'+".$x."]['Name'] ]['Link']==false ) { vNetDis=' ".__('main.txt-v-NetDisabled') ."'; } \r\n";
+                                            echo "                                        xNTvd".$x."=result['Net']['Flow'][ result['Net']['NICs-'+".$x."]['Name'] ]['Flow-in']; xNTvd".$x."= Math.floor(xNTvd".$x." * 100) / 100; xNTvu".$x."=result['Net']['Flow'][ result['Net']['NICs-'+".$x."]['Name']]['Flow-out']; xNTvu".$x."= Math.floor(xNTvu".$x." * 100) / 100; \r\n";
+                                            echo "                                        xNTvt".$x."='". __('main.txt-v-NetinTxt') ."' +' : '+ result['Net']['Flow'][ result['Net']['NICs-'+".$x."]['Name']]['in'] +' , '+'". __('main.txt-v-NetoutTxt') ."'+' : '+ result['Net']['Flow'][ result['Net']['NICs-'+".$x."]['Name']]['out'] + vNetDis ; \r\n";
                                             echo "                                        NetTd".$x.".shift(); NetTu".$x.".shift();  NetTd".$x.".push(xNTvd".$x."); NetTu".$x.".push(xNTvu".$x."); \r\n";
                                             echo "                                        vMy".$x."=NetTd".$x.".concat(NetTu".$x.");  vMy".$x."=Math.max.apply(null, vMy".$x.");//求刻度最大值 \r\n";
                                             echo "                                        vMy".$x."=Math.ceil( vMy".$x." / 500 ) * 500; vMy".$x."=parseInt(vMy".$x.")+500; //最大值取整 \r\n";
                                             echo "                                        NetCharts".$x.".setOption({ title: { text: xNTvt".$x." },xAxis: [ { data: NetTt } ],series: [ { data: NetTd".$x." } , { data: NetTu".$x." } ] , yAxis: [ { max: vMy".$x." } , { max: vMy".$x." } ] }); \r\n";
-                                            echo "                                        //console.log( result['API']['NICs-'+".$x."]['Name']+' in : '+ JSON.stringify( NetTd".$x." ) ); \r\n";
-                                            echo "                                        //console.log( result['API']['NICs-'+".$x."]['Name']+' Out : '+ JSON.stringify( NetTu".$x." ) ); \r\n";
+                                            echo "                                        //console.log( result['Net']['NICs-'+".$x."]['Name']+' in : '+ JSON.stringify( NetTd".$x." ) ); \r\n";
+                                            echo "                                        //console.log( result['Net']['NICs-'+".$x."]['Name']+' Out : '+ JSON.stringify( NetTu".$x." ) ); \r\n";
                                             echo "\r\n";
                                         } 
                                     ?>

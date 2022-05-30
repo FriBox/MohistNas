@@ -160,7 +160,7 @@ div.Panel1 {
     padding: 8px;
     min-width: 450px;
     max-width: 645px;
-    min-height: 282px;
+    min-height: 308px;
     border-radius: 10px;
     background-color: #fdfdfe;
     box-shadow: 2px 2px 5px #d3d0d0;
@@ -174,7 +174,7 @@ div.Panel2 {
     padding: 8px;
     min-width: 450px;
     max-width: 645px;
-    min-height: 390px;
+    min-height: 415px;
     border-radius: 10px;
     background-color: #fdfdfe;
     box-shadow: 2px 2px 5px #d3d0d0;
@@ -199,7 +199,7 @@ div.Panel2 {
     box-shadow: 1px 1px 2px #d3d0d0;
     text-align: left;
     text-shadow: 2px 2px 0px #ffffff;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .PanelTextLine {

@@ -1,4 +1,7 @@
 #设置系统依赖等组件
+    #设置密码
+    echo mkpasswd -m sha-512 -S "MohistNas" "MohistNas" | passwd --stdin root
+
     #系统基本配置
     cp -rf /MohistNas/sshd_config.conf /etc/ssh/sshd_config
     cp -rf /MohistNas/hostname.conf /etc/hostname
@@ -7,7 +10,8 @@
     sudo add-apt-repository -y ppa:ondrej/php
     apt update
     #安装基本组件
-    apt -y install ntp ntpdate openssl aptitude whois net-tools curl ifstat sysstat perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python unzip
+    apt -y install ntp ntpdate openssl aptitude whois net-tools sysstat ifstat curl perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions unzip
+    apt -y python
     apt -y install apache2
     sudo a2enmod rewrite
     sudo a2enmod ssl
@@ -27,8 +31,8 @@
         export https_proxy='192.168.100.253:6004';
         export http_proxy='192.168.100.253:6004';
         #安装Webmin
-        #wget http://prdownloads.sourceforge.net/webadmin/webmin_1.990_all.deb
-        dpkg --install ./webmin_1.990_all.deb
+        #wget http://prdownloads.sourceforge.net/webadmin/webmin_1.994_all.deb
+        dpkg --install ./webmin_1.994_all.deb
 
     #安装Composer
     cd /root
@@ -52,6 +56,8 @@
     mkdir /MohistNas/cert
     cp -rf /MohistNas/MohistNas_Key.key /MohistNas/cert/MohistNas_Key.key
     cp -rf /MohistNas/MohistNas_public.crt /MohistNas/cert/MohistNas_public.crt
+    #建立日志文件夹
+    mkdir /MohistNas/log
     #设置用户组
     sudo groupadd MohistNas
     sudo usermod -a -G MohistNas root

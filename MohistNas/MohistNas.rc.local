@@ -6,7 +6,7 @@ chmod -R 777 /MohistNas/cache/
 
 export MohistNasCache="/MohistNas/cache/"
 echo $(date "+%Y-%m-%d %H:%M:%S") " >> 自启动脚本成功 . " > $MohistNasCache/MohistNasCache.Status
-echo $(date "+%Y-%m-%d %H:%M:%S")  " >> 挂载16兆内存盘 . " >> $MohistNasCache/MohistNasCache.Status
-echo $(date "+%Y-%m-%d %H:%M:%S")  " >> . . . " >> $MohistNasCache/MohistNasCache.Status
+echo $(date "+%Y-%m-%d %H:%M:%S")  " >> 挂载内存盘 . " >> $MohistNasCache/MohistNasCache.Status
+echo $(date "+%Y-%m-%d %H:%M:%S")  " >> . . . . . ." >> $MohistNasCache/MohistNasCache.Status
 
 exit 0
