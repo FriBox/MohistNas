@@ -9,6 +9,12 @@
     mkpasswd -m sha-512 -S "MohistNasSalt" "MohistNas" >>/MohistNas/temp_passwd.txt && \
     chpasswd -e < /MohistNas/temp_passwd.txt && \
     rm -rf /MohistNas/temp_passwd.txt ; #无需确认修改密码
+
+    sudo chmod -R 777 /MohistNas/main/storage
+    sudo chmod -R 777 /MohistNas/main/bootstrap/cache
+    sudo chmod -R 777 /GitHub/MohistNas/MohistNas/main/storage
+    sudo chmod -R 777 /GitHub/MohistNas/MohistNas/main/bootstrap/cache
+
 COMMENT
 
     #系统基本配置
