@@ -18,7 +18,7 @@ function Chk_Authenticate($cUsername='', $cPassword='') {
         $xUser_authenticate_1=`sudo cat /etc/shadow | grep "$xU" | tr -d "\n" ;`;//获取加密的密码;
         $xUser_authenticate_1Key=explode(":",$xUser_authenticate_1)[1]; $xUser_authenticate_1Pass=explode("$",$xUser_authenticate_1Key)[2]; //获取系统中的用户加密密码
         $xUser_authenticate_2Key=exec('sudo mkpasswd -m sha-512 -S "'.$xUser_authenticate_1Pass.'" "'.$cPassword.'" ;');//计算传入的加密的秘钥;
-        echo 'sudo mkpasswd -m sha-512 -S "'.$xUser_authenticate_1Pass.'" "'.$cPassword.'" ;' ; exit();
+        //echo 'sudo mkpasswd -m sha-512 -S "'.$xUser_authenticate_1Pass.'" "'.$cPassword.'" ;' ; exit(); //调试用户密码
         if ( trim($xUser_authenticate_1Key)==trim($xUser_authenticate_2Key) ) {
             $zP=''; $zP=strtoupper(hash('sha512', 'MohistNas_Session_Password='.$xUser_authenticate_2Key, $zP));
             return [True,$xU,$zP,'Username and password verification succeeded !']; //用户存在，密码匹配
