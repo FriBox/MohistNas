@@ -477,7 +477,6 @@ Route::get('/gologout', function (Request $request) {   //登出页面
         $xU=trim(Session::get('User','')); $xP=trim(Session::get('Pass',''));
         $xV=Chk_Authenticate_Session($xU,$xP); if ($xV[0]==false) { Session::forget(['User','Pass']); return redirect('/login'); /* 用户名密码验证失败 , 重定向至登录页面; */ }
     //密码验证正确，开始输出控制面板 ===>>>
-    $Data['xSysInfo']=Get_info_Net();
     Log::info('GoLogout');
     $Data['xUser']=trim($xV[1]); return view('gologout',$Data); //输出页面;
     /*[End]*/
@@ -512,7 +511,6 @@ Route::get('/log', function (Request $request) {   //日志页面
         $xU=trim(Session::get('User','')); $xP=trim(Session::get('Pass',''));
         $xV=Chk_Authenticate_Session($xU,$xP); if ($xV[0]==false) { Session::forget(['User','Pass']); return redirect('/login'); /* 用户名密码验证失败 , 重定向至登录页面; */ }
     //密码验证正确，开始输出控制面板 ===>>>
-    $Data['xSysInfo']=Get_info_Net();
     Log::info('Log');
     $Data['xUser']=trim($xV[1]); return view('log',$Data); //输出页面;
     /*[End]*/

@@ -2,7 +2,7 @@
 
     <!-- GoLogout 功能设置区域 -->
     <script type="text/javascript">
-        setInterval(window.location.href="/logout", 100);
+        window.location.href="/logout";
     </script>
 
 @include('part-bottom')
