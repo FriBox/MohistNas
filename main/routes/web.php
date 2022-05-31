@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cookie;
 
+
 /* ======  自定义函数 - 用户认证  ====== */
 function Chk_Authenticate($cUsername='', $cPassword='') { //检查用户名密码
     $cUsername=trim($cUsername); $cPassword=trim($cPassword);
@@ -278,6 +279,7 @@ function Get_info_Storage() { //获取存储相关信息
     return $HWS;
 }
 
+
 /* ======  自定义全局变量  ====== */
 global $qLangs; //系统支持的全部语言
     $qLangs=[
@@ -315,11 +317,10 @@ Route::match(['get','post'],'debug', function (Request $request) { //调试内�
     return response()->json($Data);//输出页面;
 });
 
+
 /* ======  系统路由区域  ====== */
 Route::match(['get','post'],'/', function () { //系统登录页面，处理登录相关功能
     $zU=Session::get('User',''); $zP=Session::get('Pass','');
-    Session::forget(['User','Pass']);
-    var_dump([Session::get('User',''),Session::get('Pass','')]);exit();
     if (trim($zU)=='' or  trim($zP)=='') { return redirect('/login'); /* 无验证信息 , 重定向至登录页面; */ } else { return redirect('/index'); /* 有验证信息 , 重定向至主控制面板; */ }
 });
 
@@ -365,11 +366,13 @@ Route::get('/logout', function (Request $request) { //登出系统
         $xV=Chk_Authenticate_Session($xU,$xP); if ($xV[0]==false) { Session::forget(['User','Pass']); return redirect('/login'); /* 用户名密码验证失败 , 重定向至登录页面; */ }
     /* ====== 处理路由 Begin ====== */
     Session::forget(['User','Pass']);
+    Session::flush();
+    sleep(1);
     $Data['xMessage']=trans('main.LogoutMsg');
     $Data['xMessage_Center']='T'; //文字中间对齐
     $Data['xMessage_UrlTime']=3;
     $Data['xMessage_Url']='/';
-    var_dump([Session::get('User',''),Session::get('Pass','')]);exit();
+    var_dump([Session::get('User',''),Session::get('Pass','')]);
     return view('message',$Data); //输出页面;
 });
 
