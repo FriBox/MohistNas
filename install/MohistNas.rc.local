@@ -1,0 +1,12 @@
+#!/bin/sh
+
+mkdir /MohistNas/cache/
+mount -t tmpfs -o size=16M,mode=0755 tmpfs /MohistNas/cache/
+chmod -R 777 /MohistNas/cache/
+
+export MohistNasCache="/MohistNas/cache/"
+echo $(date "+%Y-%m-%d %H:%M:%S") " >> 自启动脚本成功 . " > $MohistNasCache/MohistNasCache.Status
+echo $(date "+%Y-%m-%d %H:%M:%S")  " >> 挂载内存盘 . " >> $MohistNasCache/MohistNasCache.Status
+echo $(date "+%Y-%m-%d %H:%M:%S")  " >> . . . . . ." >> $MohistNasCache/MohistNasCache.Status
+
+exit 0
