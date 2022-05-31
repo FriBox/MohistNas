@@ -64,6 +64,7 @@ return [
     'menu_preferences' => 'Einstellungen',
     'menu_log' => 'Systemprotokoll',
     'menu_about' => 'Etwa',
+    'menu_gologout' => 'Ausloggen',
     /* Page index */
     'txt-SysMsg' => 'System informationen',
     'txt-StorageMsg' => 'Speichergerät informationen',

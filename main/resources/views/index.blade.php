@@ -221,9 +221,9 @@
 
     <!--  读取数据JS -->
     <script type=text/javascript>
-        function RefreshStatusSys(){ //获取网络信息
+        function RefreshStatusSys(){ //获取开机时间和进程数信息
             document.getElementById("Sys_spinner").style.visibility="visible";
-                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[Sys][Time]",'_token':'{{csrf_token()}}' },//传入后台
+                var VAjax1 = $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[Sys][Time]",'_token':'{{csrf_token()}}' },//传入后台
                     success: function(result) {  //alert(result); //调试输出服务器返回信息
                         if (result["[OK!]"]==0) {  //console.log(result["API"]);
                             document.getElementById("Time_sys-uptimelang").innerHTML=result["Time"]["sys-uptimelang"];//运行时间
@@ -239,7 +239,7 @@
 
         function RefreshStatusStorage(){ //获取存储信息
             document.getElementById("Storage_spinner").style.visibility="visible";
-                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[Storage]",'_token':'{{csrf_token()}}' },//传入后台
+                var VAjax2 = $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[Storage]",'_token':'{{csrf_token()}}' },//传入后台
                     success: function(result) {  //alert(result); //调试输出服务器返回信息
                         if (result["[OK!]"]==0) {  //console.log(result["API"]);
                             //这里插入存储信息相关代码
@@ -255,7 +255,7 @@
         function RefreshStatusCM(){ //获取CPU和内存信息
             var xCPUa=0; var xMEMa=0; var xCPUs=0; var xCPUs1=[]; var xCPUs2=[];
             document.getElementById("CAndM_spinner").style.visibility="visible";
-                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[CpuState][Mem]",'_token':'{{csrf_token()}}' },//传入后台
+                var VAjax3 = $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[CpuState][Mem]",'_token':'{{csrf_token()}}' },//传入后台
                     success: function(result) {  //alert(result); //调试输出服务器返回信息
                         if (result["[OK!]"]==0) {  //console.log(result);
                             document.getElementById("Mt").innerHTML=result["Mem"]["memtotal"];//物理内存
@@ -282,7 +282,7 @@
         function RefreshStatusNet(){ //获取网络信息
             var xNICs=0;
             document.getElementById("Net_spinner").style.visibility="visible";
-                $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[Net]",'_token':'{{csrf_token()}}' },//传入后台
+                var VAjax4 = $.ajax( { type: "POST", url: '/getapi' , async : true ,  data: {"API":"[Net]",'_token':'{{csrf_token()}}' },//传入后台
                     success: function(result) {  //alert(result); //调试输出服务器返回信息
                         //document.getElementById("NetTest").innerHTML= JSON.stringify(result); //测试网络信息
                         if (result["[OK!]"]==0) {  //console.log(result["Net"]);
@@ -329,10 +329,10 @@
         }
 
         window.onload=function(){ RefreshStatusCM(); RefreshStatusNet(); }; //页面显示时马上刷新
-        setInterval( RefreshStatusSys , 6000 ); //系统信息计时器定期刷新
-        setInterval( RefreshStatusStorage , 10000 ); //存储信息计时器定期刷新
-        setInterval( RefreshStatusCM , 2000 ); //CPU和内存信息计时器定期刷新
-        setInterval( RefreshStatusNet , 3000 ); //网络信息计时器定期刷新
+        var VSI1 = setInterval( RefreshStatusSys , 6000 ); //系统信息计时器定期刷新
+        var VSI2 = setInterval( RefreshStatusStorage , 10000 ); //存储信息计时器定期刷新
+        var VSI3 = setInterval( RefreshStatusCM , 2000 ); //CPU和内存信息计时器定期刷新
+        var VSI4 = setInterval( RefreshStatusNet , 3000 ); //网络信息计时器定期刷新
     </script>
 
 @include('part-bottom')

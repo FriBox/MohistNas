@@ -18,6 +18,7 @@
 
                                     <a href="/log" class="<?php if ($xUri=='log') {echo 'AdminMenuItemNow';} else { echo 'AdminMenuItem';} ?>" >{{ __('main.menu_log') }}</a>
 
+                                    <a href="/gologout" class="<?php if ($xUri=='gologout') {echo 'AdminMenuItemNow';} else { echo 'AdminMenuItem';} ?>" >{{ __('main.menu_gologout') }}</a>
                                 </div>
                             </div>
                         </div>

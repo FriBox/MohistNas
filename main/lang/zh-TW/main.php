@@ -64,6 +64,7 @@ return [
     'menu_preferences' => '系統首選項',
     'menu_log' => '系統日誌',
     'menu_about' => '關於',
+    'menu_gologout' => '登出系統',
     /* Page index */
     'txt-SysMsg' => '系統信息',
     'txt-StorageMsg' => '存儲信息',

@@ -32,6 +32,18 @@
                 $('#staticBackdropshutdown_Btn').click(function () {
                     window.location.href="/shutdown";
                 });
+                function Gologout() {
+                    if(typeof(VSI1) != "undefined") { clearInterval(VSI1); }
+                    if(typeof(VSI2) != "undefined") { clearInterval(VSI2); }
+                    if(typeof(VSI3) != "undefined") { clearInterval(VSI3); }
+                    if(typeof(VSI4) != "undefined") { clearInterval(VSI4); }
+                    if(typeof(VAjax1) != "undefined") { VAjax1.abort(); }
+                    if(typeof(VAjax2) != "undefined") { VAjax2.abort(); }
+                    if(typeof(VAjax3) != "undefined") { VAjax3.abort(); }
+                    if(typeof(VAjax4) != "undefined") { VAjax4.abort(); }
+                    window.location.href="/gologout";
+                    return;
+                }
             </script>
             
             <!-- 页首功能HTML -->
@@ -84,8 +96,8 @@
                         </li>
 
                         <!-- 登出菜单 -->
-                        <li class="nav-item"><a href="/logout"><i class="bi bi-box-arrow-right" style="font-size:20px;line-height:46px;float:right;padding-right:8px;padding-left:2px;"  title="{{ __('main.Logout') }}" data-bs-toggle="tooltip" data-bs-placement="left"></i></a></li>
-                    
+                        <li class="nav-item"><a href="javascript:void(0);" onclick="Gologout();"><i class="bi bi-box-arrow-right" id="staticLogout_Btn" style="font-size:20px;line-height:46px;float:right;padding-right:8px;padding-left:2px;"  title="{{ __('main.Logout') }}" data-bs-toggle="tooltip" data-bs-placement="left"></i></a></li>
+
                     </ul>
                     <!-- 页首功能区域结束 -->
                 </div>

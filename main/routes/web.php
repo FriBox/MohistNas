@@ -320,8 +320,11 @@ Route::match(['get','post'],'debug', function (Request $request) { //调试内�
 
 /* ======  系统路由区域  ====== */
 Route::match(['get','post'],'/', function () { //系统登录页面，处理登录相关功能
-    $zU=Session::get('User',''); $zP=Session::get('Pass','');
-    if (trim($zU)=='' or  trim($zP)=='') { return redirect('/login'); /* 无验证信息 , 重定向至登录页面; */ } else { return redirect('/index'); /* 有验证信息 , 重定向至主控制面板; */ }
+    if (trim(Session::get('User',''))=='' or  trim(Session::get('Pass',''))=='') { 
+        return redirect('/login'); //无验证信息 , 重定向至登录页面
+    } else { 
+        return redirect('/index'); //有验证信息 , 重定向至主控制面板
+    }
 });
 
 Route::get('/lang', function (Request $request) { //设置语言页面，处理设置语言的功能
@@ -341,7 +344,6 @@ Route::get('/message', function (Request $request) { //显示提示信息
         $LangValue = strtolower(trim($LangValue));  global $qLangs;  if (isset($qLangs[$LangValue])) { App::setLocale($qLangs[$LangValue]); } else { App::setLocale('en'); } //设置语言
         $Data['xLang']=App::getLocale(); $Data['xUri']=trim(Route::getFacadeRoot()->current()->uri()); $Data['xUrl']=trim($request->fullUrl()); $Data['xReferer']=trim(request()->headers->get('referer')); $Data['xClientIP']=trim($request->ip());
         $Data['xLastRequest']=date("Y-m-d H:i:s",time()); Session::put('LastRequest',$Data['xLastRequest']);/*[End]*/
-    Session::put('LastRequest',$Data['xLastRequest']); /*[End]*/
     /* ====== 处理路由 Begin ====== */
         $Message = $request->input('mid'); //get和post一起取，同名post覆盖get;
         if (!isset($Message)) {$Message = $request->input('m', '000000');}
@@ -360,19 +362,13 @@ Route::get('/logout', function (Request $request) { //登出系统
         if (!isset($LangValue)) {$LangValue = Session::get('Lang','en'); } //如果Cookie未设置就读取Session中的Lang;
         $LangValue = strtolower(trim($LangValue));  global $qLangs;  if (isset($qLangs[$LangValue])) { App::setLocale($qLangs[$LangValue]); } else { App::setLocale('en'); } //设置语言
         $Data['xLang']=App::getLocale(); $Data['xUri']=trim(Route::getFacadeRoot()->current()->uri()); $Data['xUrl']=trim($request->fullUrl()); $Data['xReferer']=trim(request()->headers->get('referer')); $Data['xClientIP']=trim($request->ip());
-        $Data['xLastRequest']=date("Y-m-d H:i:s",time()); Session::put('LastRequest',$Data['xLastRequest']);/*[End]*/
-        /* --- 判断是否登录成功[Begin] --- */
-        $xU=trim(Session::get('User','')); $xP=trim(Session::get('Pass',''));
-        $xV=Chk_Authenticate_Session($xU,$xP); if ($xV[0]==false) { Session::forget(['User','Pass']); return redirect('/login'); /* 用户名密码验证失败 , 重定向至登录页面; */ }
+        $Data['xLastRequest']=date("Y-m-d H:i:s",time()); /*[End]*/
     /* ====== 处理路由 Begin ====== */
-    Session::forget(['User','Pass']);
-    Session::flush();
-    sleep(1);
     $Data['xMessage']=trans('main.LogoutMsg');
     $Data['xMessage_Center']='T'; //文字中间对齐
     $Data['xMessage_UrlTime']=3;
     $Data['xMessage_Url']='/';
-    var_dump([Session::get('User',''),Session::get('Pass','')]);
+    Session::forget(['User','Pass']);
     return view('message',$Data); //输出页面;
 });
 
@@ -470,6 +466,23 @@ Route::match(['get','post'],'/login',function(Request $request){ //系统登录�
     }
 })->name('login');
 
+Route::get('/gologout', function (Request $request) {   //登出页面
+        /* --- 设置语言[Begin] --- */
+        $LangValue = $request->cookie('Lang'); //读取Cookie中的Lang;
+        if (!isset($LangValue)) {$LangValue = Session::get('Lang','en'); } //如果Cookie未设置就读取Session中的Lang;
+        $LangValue = strtolower(trim($LangValue));  global $qLangs;  if (isset($qLangs[$LangValue])) { App::setLocale($qLangs[$LangValue]); } else { App::setLocale('en'); } //设置语言
+        $Data['xLang']=App::getLocale(); $Data['xUri']=trim(Route::getFacadeRoot()->current()->uri()); $Data['xUrl']=trim($request->fullUrl()); $Data['xReferer']=trim(request()->headers->get('referer')); $Data['xClientIP']=trim($request->ip());
+        $Data['xLastRequest']=date("Y-m-d H:i:s",time()); Session::put('LastRequest',$Data['xLastRequest']);/*[End]*/
+        /* --- 判断是否登录成功[Begin] --- */
+        $xU=trim(Session::get('User','')); $xP=trim(Session::get('Pass',''));
+        $xV=Chk_Authenticate_Session($xU,$xP); if ($xV[0]==false) { Session::forget(['User','Pass']); return redirect('/login'); /* 用户名密码验证失败 , 重定向至登录页面; */ }
+    //密码验证正确，开始输出控制面板 ===>>>
+    $Data['xSysInfo']=Get_info_Net();
+    Log::info('GoLogout');
+    $Data['xUser']=trim($xV[1]); return view('gologout',$Data); //输出页面;
+    /*[End]*/
+});
+
 Route::get('/index', function (Request $request) { //系统首页
         /* --- 设置语言[Begin] --- */
         $LangValue = $request->cookie('Lang'); //读取Cookie中的Lang;
@@ -483,7 +496,7 @@ Route::get('/index', function (Request $request) { //系统首页
     //密码验证正确，开始输出控制面板 ===>>>
     //$HW=Get_phpSysinfo($hosturl=URL::secureAsset(''),$decode=true);
     $Data['xSysInfo']=Get_info_All();
-    Log::info('打开控制面板！');
+    Log::info('Dashboard');
     $Data['xUser']=trim($xV[1]); return view('index',$Data); //输出页面;
     /*[End]*/
 });
@@ -500,7 +513,7 @@ Route::get('/log', function (Request $request) {   //日志页面
         $xV=Chk_Authenticate_Session($xU,$xP); if ($xV[0]==false) { Session::forget(['User','Pass']); return redirect('/login'); /* 用户名密码验证失败 , 重定向至登录页面; */ }
     //密码验证正确，开始输出控制面板 ===>>>
     $Data['xSysInfo']=Get_info_Net();
-    Log::info('打开控制面板！');
+    Log::info('Log');
     $Data['xUser']=trim($xV[1]); return view('log',$Data); //输出页面;
     /*[End]*/
 });
@@ -516,7 +529,7 @@ Route::get('/about', function (Request $request) {   //关于页面
         $xU=trim(Session::get('User','')); $xP=trim(Session::get('Pass',''));
         $xV=Chk_Authenticate_Session($xU,$xP); if ($xV[0]==false) { Session::forget(['User','Pass']); return redirect('/login'); /* 用户名密码验证失败 , 重定向至登录页面; */ }
     //密码验证正确，开始输出控制面板 ===>>>
-    Log::info('打开控制面板！');
+    Log::info('About');
     $Data['xUser']=trim($xV[1]); return view('about',$Data); //输出页面;
     /*[End]*/
 });
@@ -532,7 +545,7 @@ Route::get('/preferences', function (Request $request) {   //首选项页面
         $xU=trim(Session::get('User','')); $xP=trim(Session::get('Pass',''));
         $xV=Chk_Authenticate_Session($xU,$xP); if ($xV[0]==false) { Session::forget(['User','Pass']); return redirect('/login'); /* 用户名密码验证失败 , 重定向至登录页面; */ }
     //密码验证正确，开始输出控制面板 ===>>>
-    Log::info('打开控制面板！');
+    Log::info('Preferences');
     $Data['xUser']=trim($xV[1]); return view('preferences',$Data); //输出页面;
     /*[End]*/
 });

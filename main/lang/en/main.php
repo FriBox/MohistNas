@@ -64,6 +64,7 @@ return [
     'menu_preferences' => 'Preferences',
     'menu_log' => 'System log',
     'menu_about' => 'About',
+    'menu_gologout' => 'Logout',
     /* Page index */
     'txt-SysMsg' => 'System information',
     'txt-StorageMsg' => 'Storage information',

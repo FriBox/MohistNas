@@ -64,6 +64,7 @@ return [
     'menu_preferences' => '環境設定',
     'menu_log' => 'システムログ',
     'menu_about' => 'だいたい',
+    'menu_gologout' => 'ログアウト',
     /* Page index */
     'txt-SysMsg' => '記憶情報',
     'txt-StorageMsg' => 'ストレージ情報',
