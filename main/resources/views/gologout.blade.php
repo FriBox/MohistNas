@@ -1,6 +1,6 @@
 @include('part-top')
 
-    <!-- GoLogout 功能设置区域 -->
+    <!-- GoLogout 登出系统 -->
     <script type="text/javascript">
         window.location.href="/logout";
     </script>
