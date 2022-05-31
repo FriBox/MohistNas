@@ -12,8 +12,6 @@
 
     sudo chmod -R 777 /MohistNas/main/storage
     sudo chmod -R 777 /MohistNas/main/bootstrap/cache
-    sudo chmod -R 777 /GitHub/MohistNas/MohistNas/main/storage
-    sudo chmod -R 777 /GitHub/MohistNas/MohistNas/main/bootstrap/cache
 
 COMMENT
 
