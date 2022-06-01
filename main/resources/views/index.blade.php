@@ -329,8 +329,8 @@
         }
 
         window.onload=function(){ RefreshStatusCM(); RefreshStatusNet(); }; //页面显示时马上刷新
-        var VSI1 = setInterval( RefreshStatusSys , 6000 ); //系统信息计时器定期刷新
-        var VSI2 = setInterval( RefreshStatusStorage , 10000 ); //存储信息计时器定期刷新
+        var VSI1 = setInterval( RefreshStatusSys , 5000 ); //系统信息计时器定期刷新
+        var VSI2 = setInterval( RefreshStatusStorage , 4000 ); //存储信息计时器定期刷新
         var VSI3 = setInterval( RefreshStatusCM , 2000 ); //CPU和内存信息计时器定期刷新
         var VSI4 = setInterval( RefreshStatusNet , 3000 ); //网络信息计时器定期刷新
     </script>
