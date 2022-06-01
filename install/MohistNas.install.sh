@@ -15,6 +15,8 @@
     sudo chmod -R 777 /MohistNas/main/storage
     sudo chmod -R 777 /MohistNas/main/bootstrap/cache
     sudo chmod +x /MohistNas/install/MohistNas.update.sh
+    dd if=/dev/zero of=file && rm -rf file
+    
 COMMENT
 
     #系统基本配置
