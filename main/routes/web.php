@@ -477,7 +477,8 @@ Route::get('/gologout', function (Request $request) {   //登出页面
         $xV=Chk_Authenticate_Session($xU,$xP); if ($xV[0]==false) { Session::forget(['User','Pass']); return redirect('/login'); /* 用户名密码验证失败 , 重定向至登录页面; */ }
     //密码验证正确，开始输出控制面板 ===>>>
     Log::info('GoLogout');
-    Session::forget(['User','Pass']); return view('gologout',$Data); //输出页面;
+    Session::forget(['User','Pass']); 
+    $Data['xUser']=trim($xV[1]); return view('gologout',$Data); //输出页面;
 });
 
 Route::get('/index', function (Request $request) { //系统首页
