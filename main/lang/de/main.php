@@ -66,6 +66,7 @@ return [
     'menu_about' => 'Etwa',
     'menu_gologout' => 'Ausloggen',
     /* Page index */
+    'txt-gologout' => 'Bitte warten Sie beim Abmelden ... ',
     'txt-SysMsg' => 'System informationen',
     'txt-StorageMsg' => 'Speichergerät informationen',
     'txt-CPUMsg' => 'CPU-Informationen',

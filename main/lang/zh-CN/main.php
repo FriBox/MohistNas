@@ -66,6 +66,7 @@ return [
     'menu_about' => '关于',
     'menu_gologout' => '登出系统',
     /* Page index */
+    'txt-gologout' => '请稍候，系统登出中 ... ',
     'txt-SysMsg' => '系统信息',
     'txt-StorageMsg' => '存储信息',
     'txt-CPUMsg' => 'CPU信息',

@@ -66,6 +66,7 @@ return [
     'menu_about' => 'About',
     'menu_gologout' => 'Logout',
     /* Page index */
+    'txt-gologout' => 'Please wait, system logout is in progress ... ',
     'txt-SysMsg' => 'System information',
     'txt-StorageMsg' => 'Storage information',
     'txt-CPUMsg' => 'CPU information',

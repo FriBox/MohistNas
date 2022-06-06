@@ -66,6 +66,7 @@ return [
     'menu_about' => 'だいたい',
     'menu_gologout' => 'ログアウト',
     /* Page index */
+    'txt-gologout' => 'ログアウトするまでお待ちください...',
     'txt-SysMsg' => '記憶情報',
     'txt-StorageMsg' => 'ストレージ情報',
     'txt-CPUMsg' => 'CPU情報',

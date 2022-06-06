@@ -365,7 +365,7 @@ Route::get('/logout', function (Request $request) { //登出系统
     /* ====== 处理路由 Begin ====== */
     $Data['xMessage']=trans('main.LogoutMsg');
     $Data['xMessage_Center']='T'; //文字中间对齐
-    $Data['xMessage_UrlTime']=3;
+    $Data['xMessage_UrlTime']=4;
     $Data['xMessage_Url']='/';
     Log::info('Logout');
     Session::forget(['User','Pass']); return view('message',$Data); //输出页面;
